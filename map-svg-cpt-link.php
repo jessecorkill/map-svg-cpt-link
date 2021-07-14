@@ -27,10 +27,11 @@ if ( $cpt_query->have_posts() ) {
 // Add the rest of relevant data to $cpt_data array with our newly added IDs
 if($cpt_data){
   foreach($cpt_data as $post){
-    $id = $post[0]
+    $id = $post[0];
     array_push($cpt_data[$id], get_the_title());
   }
 }
+echo $cpt_data;
 
 class MSCL{
   init(){
