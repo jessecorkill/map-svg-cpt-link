@@ -25,7 +25,7 @@ if($cpt_data){
   }
 }
 else{
-  echo "MSCL: No Custom Post Data Available."
+  echo "MSCL: No Custom Post Data Available.";
 }
 
 mysqli_close($conn);
