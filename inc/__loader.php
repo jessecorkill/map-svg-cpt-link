@@ -2,7 +2,9 @@
 class MSCLLoader{
   public static function init(){
     //self::load('db-transfer');
-    self::load('db-write');
+    self::load('jc-helpers');
+    self::load('cpt-data');
+    //self::load('db-write');
 
   }
   private function load($file){
