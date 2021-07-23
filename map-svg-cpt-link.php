@@ -2,7 +2,7 @@
 /*
 Plugin Name: Map SVG CPT Link
 description: This plugin connects a custom post type that you have created and updates or creates a MapSVG item for each custom post. Database must be MySQL.
-Version: 0.0.1
+Version: 1.0.0
 Author: Jesse Corkill
 */
 //Globals
