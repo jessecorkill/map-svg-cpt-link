@@ -70,25 +70,46 @@ class MSCL{
   public static function init(){
     self::load('__loader');
   }
-  private function load($file){
+  private static function load($file){
     require __DIR__ . '/inc/' . $file . '.php';
   }
 }
 MSCL::init();
 
-$table_name = 'wp_mapsvg_database_84';
+$table_name = 'wp_c5bebcd523_mapsvg_database_' . get_field('map_id', 'options');
 global $wpdb;
 
 //echo esc_html(show_array(wp_get_post_categories('83')));
 
+//Create Index Array of Available Categories
+$cats = get_categories();
+$cat_indx = [];
+$i = 0;
+foreach($cats as $cat){
+	$cat_indx[$i] = $cat;
+	$i = $i + 1;
+}
+
+
 if($cpt_data){
   foreach($cpt_data as $post){
+	  //Get Categories of Post & Parse
+	  $post_cats = get_the_category($post->ID);
+	  $the_term = "";
+	  foreach($post_cats as $post_cat){
+		  if(!$post_cat = "verdana" && !$post_cat = "villa"){
+			  $the_term = $post_cat;
+		  }
+	  }
     $db_fields = array(
       'title' => $post->post_title,
       'description' => $post->post_content,
       'link' => $post->guid,
       'post_id' => $post->ID,
-      'location_address' => get_field('address', $post->ID)
+      'location_address' => get_field('address', $post->ID),
+	  'featured_image' => get_the_post_thumbnail_url( $post->ID, 'post-thumbnail'),
+	  'category_text' => $the_term,
+	  'category' => array_keys($cat_indx, $the_term),
     );
     // KEY: %d interger (whole numbers only) %s string %f float
     $db_format = array(
@@ -96,7 +117,9 @@ if($cpt_data){
       '%s',
       '%s',
       '%d',
-      '%s'
+      '%s',
+	  '%s',
+	  '%s',
     );
     $db_where = array(
       'post_id' => $post->ID
@@ -123,7 +146,7 @@ if($cpt_data){
 
       $wpdb->update($table_name, $db_fields, $db_where, $db_format);
     }
-    //$wpdb->show_errors();
+    $wpdb->show_errors();
   }
 }
 ?>

@@ -6,9 +6,9 @@ class MSCLLoader{
     self::load('acf');
     self::load('cpt-data');
     //self::load('db-write');
-
   }
-  private function load($file){
+
+  private static function load($file){
     require __DIR__ . '/' . $file . '.php';
   }
 }

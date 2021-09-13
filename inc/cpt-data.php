@@ -1,6 +1,6 @@
 <?
 global $cpt_data;
-$CPT_name = 'floorplan';
+$CPT_name = get_field('cpt_slug' , 'options');
 $args = array(
   'post_type' => $CPT_name
 );
