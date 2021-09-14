@@ -7,3 +7,8 @@ function console_log( $data ){
   echo 'console.log('. json_encode( $data ) .')';
   echo '</script>';
 }
+function verify_variable($var){
+  if($var){
+    return $var;
+  }
+}

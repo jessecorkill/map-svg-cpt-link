@@ -81,14 +81,50 @@ global $wpdb;
 
 //echo esc_html(show_array(wp_get_post_categories('83')));
 
+<<<<<<< Updated upstream
 if($cpt_data){
   foreach($cpt_data as $post){
+=======
+//Create Index Array of Available Categories
+$cat_args = array(
+  'taxonomy' => 'category',
+  'hide_empty' => false,
+);
+$cats = get_terms($cat_args);
+$cat_indx = [];
+$i = 0;
+foreach($cats as $cat){
+	$cat_indx[$i] = $cat->name;
+	$i = $i + 1;
+}
+console_log($cat_indx);
+
+if($cpt_data){
+  foreach($cpt_data as $post){
+	  //Get Categories of Post & Parse
+	  $post_cats = get_the_category($post->ID);
+	  $the_term = "";
+	  foreach($post_cats as $post_cat){
+		  if($post_cat->name != "Veranda" && $post_cat->name != "Villa"){
+        $the_term = $post_cat->name;
+
+		  }
+	  }
+>>>>>>> Stashed changes
     $db_fields = array(
       'title' => $post->post_title,
       'description' => $post->post_content,
       'link' => $post->guid,
       'post_id' => $post->ID,
+<<<<<<< Updated upstream
       'location_address' => get_field('address', $post->ID)
+=======
+      'location_address' => verify_variable(get_field('address', $post->ID)),
+      'featured_image' => verify_variable(get_the_post_thumbnail_url( $post->ID, 'post-thumbnail')),
+      'category_text' => $the_term,
+      //'category' => array_keys($cat_indx, $the_term),
+      'category' => array_search($the_term, $cat_indx) + 1,
+>>>>>>> Stashed changes
     );
     // KEY: %d interger (whole numbers only) %s string %f float
     $db_format = array(
@@ -96,7 +132,14 @@ if($cpt_data){
       '%s',
       '%s',
       '%d',
+<<<<<<< Updated upstream
       '%s'
+=======
+      '%s',
+	  '%s',
+	  '%s',
+    '%d',
+>>>>>>> Stashed changes
     );
     $db_where = array(
       'post_id' => $post->ID
@@ -105,12 +148,15 @@ if($cpt_data){
 
 
     //Add new identifier column to DB table.
-    $col_query = $wpdb->get_row("SELECT * FROM " . $table_name);
+    $col_query = $wpdb->get_row("SELECT * FROM " . $table_name . " WHERE post_id IS NOT NULL");
     //Add column if not present.
     if(!isset($col_query->post_id)){
       $wpdb->query("ALTER TABLE " . $table_name . " ADD post_id INT(11)");
       //console_log('Table altered!');
     }
+
+
+
     //Check if post already exists in table..
     $row = $wpdb->get_row("SELECT * FROM " . $table_name . " WHERE post_id = " . "'". $post->ID."'", OBJECT);
     //Post does NOT exist, so add a new row.
