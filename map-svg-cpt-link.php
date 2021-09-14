@@ -2,7 +2,7 @@
 /*
 Plugin Name: Map SVG CPT Link
 description: This plugin connects a custom post type that you have created and updates or creates a MapSVG item for each custom post. Database must be MySQL.
-Version: 1.0.0
+Version: 1.5.0
 Author: Jesse Corkill
 */
 //Globals
@@ -81,10 +81,6 @@ global $wpdb;
 
 //echo esc_html(show_array(wp_get_post_categories('83')));
 
-<<<<<<< Updated upstream
-if($cpt_data){
-  foreach($cpt_data as $post){
-=======
 //Create Index Array of Available Categories
 $cat_args = array(
   'taxonomy' => 'category',
@@ -110,21 +106,16 @@ if($cpt_data){
 
 		  }
 	  }
->>>>>>> Stashed changes
     $db_fields = array(
       'title' => $post->post_title,
       'description' => $post->post_content,
       'link' => $post->guid,
       'post_id' => $post->ID,
-<<<<<<< Updated upstream
-      'location_address' => get_field('address', $post->ID)
-=======
       'location_address' => verify_variable(get_field('address', $post->ID)),
       'featured_image' => verify_variable(get_the_post_thumbnail_url( $post->ID, 'post-thumbnail')),
       'category_text' => $the_term,
       //'category' => array_keys($cat_indx, $the_term),
       'category' => array_search($the_term, $cat_indx) + 1,
->>>>>>> Stashed changes
     );
     // KEY: %d interger (whole numbers only) %s string %f float
     $db_format = array(
@@ -132,14 +123,10 @@ if($cpt_data){
       '%s',
       '%s',
       '%d',
-<<<<<<< Updated upstream
-      '%s'
-=======
       '%s',
-	  '%s',
-	  '%s',
-    '%d',
->>>>>>> Stashed changes
+      '%s',
+      '%s',
+      '%d',
     );
     $db_where = array(
       'post_id' => $post->ID
