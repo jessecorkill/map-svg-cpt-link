@@ -114,8 +114,9 @@ if($cpt_data){
       'location_address' => verify_variable(get_field('address', $post->ID)),
       'featured_image' => verify_variable(get_the_post_thumbnail_url( $post->ID, 'post-thumbnail')),
       'category_text' => $the_term,
-      //'category' => array_keys($cat_indx, $the_term),
       'category' => array_search($the_term, $cat_indx) + 1,
+      'price' => verify_variable(get_field('price', $post->ID)),
+      'availability' => verify_variable(get_field('status', $post->ID)),
     );
     // KEY: %d interger (whole numbers only) %s string %f float
     $db_format = array(
@@ -127,6 +128,8 @@ if($cpt_data){
       '%s',
       '%s',
       '%d',
+      '%s',
+      '%s',
     );
     $db_where = array(
       'post_id' => $post->ID
@@ -135,17 +138,31 @@ if($cpt_data){
 
 
     //Add new identifier column to DB table.
-    $col_query = $wpdb->get_row("SELECT * FROM " . $table_name . " WHERE post_id IS NOT NULL");
+    $col_query_postid = $wpdb->get_row("SELECT * FROM " . $table_name . " WHERE post_id IS NOT NULL");
     //Add column if not present.
-    if(!isset($col_query->post_id)){
+    if(!isset($col_query_postid->post_id)){
       $wpdb->query("ALTER TABLE " . $table_name . " ADD post_id INT(11)");
+      //console_log('Table altered!');
+    }
+    //New Price Column
+    $col_query_price = $wpdb->get_row("SELECT * FROM " . $table_name . " WHERE price IS NOT NULL");
+    //Add column if not present.
+    if(!isset($col_query_price->price)){
+      $wpdb->query("ALTER TABLE " . $table_name . " ADD price VARCHAR(255)");
+      //console_log('Table altered!');
+    }
+    //New Status Column
+    $col_query_status = $wpdb->get_row("SELECT * FROM " . $table_name . " WHERE availability IS NOT NULL");
+    //Add column if not present.
+    if(!isset($col_query_status->availability)){
+      $wpdb->query("ALTER TABLE " . $table_name . " ADD availability VARCHAR(255)");
       //console_log('Table altered!');
     }
 
 
 
     //Check if post already exists in table..
-    $row = $wpdb->get_row("SELECT * FROM " . $table_name . " WHERE post_id = " . "'". $post->ID."'", OBJECT);
+    $row = $wpdb->get_row("SELECT * FROM " . $table_name . " WHERE post_id = " . "'". $post->ID . "'", OBJECT);
     //Post does NOT exist, so add a new row.
     if(!$row){
       $wpdb->insert($table_name, $db_fields,  $db_format);
