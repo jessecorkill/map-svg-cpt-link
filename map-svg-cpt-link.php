@@ -97,25 +97,28 @@ foreach($cats as $cat){
 
 if($cpt_data){
   foreach($cpt_data as $post){
+    $the_term = "";
 	  //Get Categories of Post & Parse
 	  $post_cats = get_the_category($post->ID);
-	  $the_term = "";
+	  $the_term_name = "";
 	  foreach($post_cats as $post_cat){
 		  if($post_cat->name != "Veranda" && $post_cat->name != "Villa"){
-        $the_term = $post_cat->name;
+        $the_term_name = $post_cat->name;
+        //Get Post's main taxonomy (category) 
+        $the_term = $post_cat;
 
 		  }
 	  }
     $db_fields = array(
       'title' => $post->post_title,
-      'description' => $post->post_content,
+      'description' => verify_variable(term_description($the_term->ID)),
       'link' => $post->guid,
       'post_id' => $post->ID,
       'location_address' => verify_variable(get_field('address', $post->ID)),
-      'featured_image' => verify_variable(get_the_post_thumbnail_url( $post->ID, 'post-thumbnail')),
-      'category_text' => $the_term,
-      'category' => array_search($the_term, $cat_indx) + 1,
-      'price' => verify_variable(get_field('price', $post->ID)),
+      'featured_image' => verify_variable(get_field('featured_image', $the_term)['url']),
+      'category_text' => $the_term_name,
+      'category' => array_search($the_term_name, $cat_indx) + 1,
+      'price' => verify_variable(get_field('price', $the_term)),
       'availability' => verify_variable(get_field('status', $post->ID)),
     );
     // KEY: %d interger (whole numbers only) %s string %f float
