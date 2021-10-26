@@ -104,14 +104,14 @@ if($cpt_data){
 	  foreach($post_cats as $post_cat){
 		  if($post_cat->name != "Veranda" && $post_cat->name != "Villa"){
         $the_term_name = $post_cat->name;
-        //Get Post's main taxonomy (category) 
+        //Get Post's main taxonomy (category)
         $the_term = $post_cat;
 		  }
 	  }
     $db_fields = array(
       'title' => $post->post_title,
       'description' => verify_variable(term_description($the_term->ID)),
-      'link' => $post->guid,
+      'link' => verify_variable(get_field('page', $the_term)),
       'post_id' => $post->ID,
       'location_address' => verify_variable(get_field('address', $post->ID)),
       'featured_image' => verify_variable(get_field('featured_image', $the_term)['url']),
