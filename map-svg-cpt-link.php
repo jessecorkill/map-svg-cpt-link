@@ -106,7 +106,6 @@ if($cpt_data){
         $the_term_name = $post_cat->name;
         //Get Post's main taxonomy (category) 
         $the_term = $post_cat;
-
 		  }
 	  }
     $db_fields = array(
