@@ -114,7 +114,7 @@ if($cpt_data){
       'link' => verify_variable(get_field('page', $the_term)),
       'post_id' => $post->ID,
       'location_address' => verify_variable(get_field('address', $post->ID)),
-      'featured_image' => verify_variable(get_field('featured_image', $the_term)['url']),
+      'featured_image' => verify_variable(get_field('featured_image', $the_term->url)),
       'category_text' => $the_term_name,
       'category' => array_search($the_term_name, $cat_indx) + 1,
       'price' => verify_variable(get_field('price', $the_term)),
