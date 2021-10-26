@@ -110,15 +110,15 @@ if($cpt_data){
 	  }
     $db_fields = array(
       'title' => $post->post_title,
-      'description' => verify_variable(term_description($the_term->ID)),
-      'link' => verify_variable(get_field('page', $the_term)),
+      'description' => term_description($the_term->ID),
+      'link' => get_field('page', $the_term),
       'post_id' => $post->ID,
-      'location_address' => verify_variable(get_field('address', $post->ID)),
-      'featured_image' => verify_variable(get_field('featured_image', $the_term->url)),
+      'location_address' => get_field('address', $post->ID),
+      'featured_image' => get_field('featured_image', $the_term->url),
       'category_text' => $the_term_name,
       'category' => array_search($the_term_name, $cat_indx) + 1,
-      'price' => verify_variable(get_field('price', $the_term)),
-      'availability' => verify_variable(get_field('status', $post->ID)),
+      'price' => get_field('price', $the_term),
+      'availability' => get_field('status', $post->ID),
     );
     // KEY: %d interger (whole numbers only) %s string %f float
     $db_format = array(
