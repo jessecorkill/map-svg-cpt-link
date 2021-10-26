@@ -2,7 +2,7 @@
 /*
 Plugin Name: Map SVG CPT Link
 description: This plugin connects a custom post type that you have created and updates or creates a MapSVG item for each custom post. Database must be MySQL.
-Version: 1.0.0
+Version: 1.5.0
 Author: Jesse Corkill
 */
 //Globals
@@ -82,34 +82,43 @@ global $wpdb;
 //echo esc_html(show_array(wp_get_post_categories('83')));
 
 //Create Index Array of Available Categories
-$cats = get_categories();
+$cat_args = array(
+  'taxonomy' => 'category',
+  'hide_empty' => false,
+);
+$cats = get_terms($cat_args);
 $cat_indx = [];
 $i = 0;
 foreach($cats as $cat){
-	$cat_indx[$i] = $cat;
+	$cat_indx[$i] = $cat->name;
 	$i = $i + 1;
 }
-
+//console_log($cat_indx);
 
 if($cpt_data){
   foreach($cpt_data as $post){
+    $the_term = "";
 	  //Get Categories of Post & Parse
 	  $post_cats = get_the_category($post->ID);
-	  $the_term = "";
+	  $the_term_name = "";
 	  foreach($post_cats as $post_cat){
-		  if(!$post_cat = "verdana" && !$post_cat = "villa"){
-			  $the_term = $post_cat;
+		  if($post_cat->name != "Veranda" && $post_cat->name != "Villa"){
+        $the_term_name = $post_cat->name;
+        //Get Post's main taxonomy (category) 
+        $the_term = $post_cat;
 		  }
 	  }
     $db_fields = array(
       'title' => $post->post_title,
-      'description' => $post->post_content,
+      'description' => verify_variable(term_description($the_term->ID)),
       'link' => $post->guid,
       'post_id' => $post->ID,
-      'location_address' => get_field('address', $post->ID),
-	  'featured_image' => get_the_post_thumbnail_url( $post->ID, 'post-thumbnail'),
-	  'category_text' => $the_term,
-	  'category' => array_keys($cat_indx, $the_term),
+      'location_address' => verify_variable(get_field('address', $post->ID)),
+      'featured_image' => verify_variable(get_field('featured_image', $the_term)['url']),
+      'category_text' => $the_term_name,
+      'category' => array_search($the_term_name, $cat_indx) + 1,
+      'price' => verify_variable(get_field('price', $the_term)),
+      'availability' => verify_variable(get_field('status', $post->ID)),
     );
     // KEY: %d interger (whole numbers only) %s string %f float
     $db_format = array(
@@ -118,8 +127,11 @@ if($cpt_data){
       '%s',
       '%d',
       '%s',
-	  '%s',
-	  '%s',
+      '%s',
+      '%s',
+      '%d',
+      '%s',
+      '%s',
     );
     $db_where = array(
       'post_id' => $post->ID
@@ -128,14 +140,31 @@ if($cpt_data){
 
 
     //Add new identifier column to DB table.
-    $col_query = $wpdb->get_row("SELECT * FROM " . $table_name);
+    $col_query_postid = $wpdb->get_row("SELECT * FROM " . $table_name . " WHERE post_id IS NOT NULL");
     //Add column if not present.
-    if(!isset($col_query->post_id)){
+    if(!isset($col_query_postid->post_id)){
       $wpdb->query("ALTER TABLE " . $table_name . " ADD post_id INT(11)");
       //console_log('Table altered!');
     }
+    //New Price Column
+    $col_query_price = $wpdb->get_row("SELECT * FROM " . $table_name . " WHERE price IS NOT NULL");
+    //Add column if not present.
+    if(!isset($col_query_price->price)){
+      $wpdb->query("ALTER TABLE " . $table_name . " ADD price VARCHAR(255)");
+      //console_log('Table altered!');
+    }
+    //New Status Column
+    $col_query_status = $wpdb->get_row("SELECT * FROM " . $table_name . " WHERE availability IS NOT NULL");
+    //Add column if not present.
+    if(!isset($col_query_status->availability)){
+      $wpdb->query("ALTER TABLE " . $table_name . " ADD availability VARCHAR(255)");
+      //console_log('Table altered!');
+    }
+
+
+
     //Check if post already exists in table..
-    $row = $wpdb->get_row("SELECT * FROM " . $table_name . " WHERE post_id = " . "'". $post->ID."'", OBJECT);
+    $row = $wpdb->get_row("SELECT * FROM " . $table_name . " WHERE post_id = " . "'". $post->ID . "'", OBJECT);
     //Post does NOT exist, so add a new row.
     if(!$row){
       $wpdb->insert($table_name, $db_fields,  $db_format);
