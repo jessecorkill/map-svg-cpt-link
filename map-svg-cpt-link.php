@@ -77,6 +77,7 @@ class MSCL{
 MSCL::init();
 
 $table_name = 'wp_c5bebcd523_mapsvg_database_' . get_field('map_id', 'options');
+$table_name = 'wp_mapsvg_database_84';
 global $wpdb;
 
 //echo esc_html(show_array(wp_get_post_categories('83')));
@@ -96,6 +97,7 @@ foreach($cats as $cat){
 //console_log($cat_indx);
 
 if($cpt_data){
+  //console_log(count($cpt_data));
   foreach($cpt_data as $post){
     $the_term = "";
 	  //Get Categories of Post & Parse
@@ -139,27 +141,40 @@ if($cpt_data){
     //console_log($post->ID);
 
 
-    //Add new identifier column to DB table.
-    $col_query_postid = $wpdb->get_row("SELECT * FROM " . $table_name . " WHERE post_id IS NOT NULL");
-    //Add column if not present.
-    if(!isset($col_query_postid->post_id)){
-      $wpdb->query("ALTER TABLE " . $table_name . " ADD post_id INT(11)");
-      //console_log('Table altered!');
+    // //Add new identifier column to DB table.
+    // $col_query_postid = $wpdb->get_row("SELECT * FROM " . $table_name . " WHERE post_id IS NOT NULL");
+    // //Add column if not present.
+    // if(!isset($col_query_postid->post_id)){
+    //   $wpdb->query("ALTER TABLE " . $table_name . " ADD post_id INT(11)");
+    //   //console_log('Table altered!');
+    // }
+    // //New Price Column
+    // $col_query_price = $wpdb->get_row("SELECT * FROM " . $table_name . " WHERE price IS NOT NULL");
+    // //Add column if not present.
+    // if(!isset($col_query_price->price)){
+    //   $wpdb->query("ALTER TABLE " . $table_name . " ADD price VARCHAR(255)");
+    //   //console_log('Table altered!');
+    // }
+    // //New Status Column
+    // $col_query_status = $wpdb->get_row("SELECT * FROM " . $table_name . " WHERE availability IS NOT NULL");
+    // //Add column if not present.
+    // if(!isset($col_query_status->availability)){
+    //   $wpdb->query("ALTER TABLE " . $table_name . " ADD availability VARCHAR(255)");
+    //   //console_log('Table altered!');
+    // }
+
+
+    //Dynamic Column Checker
+    foreach(array_keys($db_fields) as $column){
+      //Check for existing Column
+      $col_query = $wpdb->get_results("SELECT * FROM " . $table_name . " WHERE ". $column);
+      //Add column if not present.
+      if(!isset($col_query)){
+        $wpdb->query("ALTER TABLE " . $table_name . " ADD " . $column . " VARCHAR(255)");
+        //console_log('Table altered! Column ' . $column);
+      }
     }
-    //New Price Column
-    $col_query_price = $wpdb->get_row("SELECT * FROM " . $table_name . " WHERE price IS NOT NULL");
-    //Add column if not present.
-    if(!isset($col_query_price->price)){
-      $wpdb->query("ALTER TABLE " . $table_name . " ADD price VARCHAR(255)");
-      //console_log('Table altered!');
-    }
-    //New Status Column
-    $col_query_status = $wpdb->get_row("SELECT * FROM " . $table_name . " WHERE availability IS NOT NULL");
-    //Add column if not present.
-    if(!isset($col_query_status->availability)){
-      $wpdb->query("ALTER TABLE " . $table_name . " ADD availability VARCHAR(255)");
-      //console_log('Table altered!');
-    }
+
 
 
 
