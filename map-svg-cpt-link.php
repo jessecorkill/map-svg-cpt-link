@@ -17,14 +17,14 @@ if ( !class_exists('acf') ) { // if ACF Pro plugin does not currently exist
   /** Start: Customize ACF path */
   add_filter('acf/settings/path', 'cysp_acf_settings_path');
   function cysp_acf_settings_path( $path ) {
-    $path = plugin_dir_path( __FILE__ ) . '/inc/acf-incs/acf/';
+    $path = plugin_dir_path( __FILE__ ) . 'inc/acf-incs/acf/';
     return $path;
   }
   /** End: Customize ACF path */
   /** Start: Customize ACF dir */
   add_filter('acf/settings/dir', 'cysp_acf_settings_dir');
   function cysp_acf_settings_dir( $path ) {
-    $dir = plugin_dir_url( __FILE__ ) . '/inc/acf-incs/acf/';
+    $dir = plugin_dir_url( __FILE__ ) . 'inc/acf-incs/acf/';
     return $dir;
   }
   /** End: Customize ACF path */
@@ -32,12 +32,12 @@ if ( !class_exists('acf') ) { // if ACF Pro plugin does not currently exist
   add_filter('acf/settings/show_admin', '__return_false');
   /** End: Hide ACF field group menu item */
   /** Start: Include ACF */
-  include_once( plugin_dir_path( __FILE__ ) . '/inc/acf-incs/acf/acf.php' );
+  include_once( plugin_dir_path( __FILE__ ) . 'inc/acf-incs/acf/acf.php' );
   /** End: Include ACF */
   /** Start: Create JSON save point */
   add_filter('acf/settings/save_json', 'cysp_acf_json_save_point');
   function cysp_acf_json_save_point( $path ) {
-    $path = plugin_dir_path( __FILE__ ) . '/inc/acf-incs/acf-json/';
+    $path = plugin_dir_path( __FILE__ ) . 'inc/acf-incs/acf-json/';
     return $path;
   }
   /** End: Create JSON save point */
@@ -47,7 +47,7 @@ if ( !class_exists('acf') ) { // if ACF Pro plugin does not currently exist
   /** Start: Stop ACF upgrade notifications */
   add_filter( 'site_transient_update_plugins', 'cysp_stop_acf_update_notifications', 11 );
   function cysp_stop_acf_update_notifications( $value ) {
-    unset( $value->response[ plugin_dir_path( __FILE__ ) . '/inc/acf-incs/acf/acf.php' ] );
+    unset( $value->response[ plugin_dir_path( __FILE__ ) . 'inc/acf-incs/acf/acf.php' ] );
     return $value;
   }
   /** End: Stop ACF upgrade notifications */
@@ -59,7 +59,7 @@ if ( !class_exists('acf') ) { // if ACF Pro plugin does not currently exist
 /** End: Detect ACF Pro plugin. Include if not present. */
 /** Start: Function to create JSON load point */
 function cysp_acf_json_load_point( $paths ) {
-  $paths[] = plugin_dir_path( __FILE__ ) . '/inc/acf-incs/acf-json-load';
+  $paths[] = plugin_dir_path( __FILE__ ) . 'inc/acf-incs/acf-json-load';
   return $paths;
 }
 /** End: Function to create JSON load point */
@@ -101,25 +101,26 @@ if($cpt_data){
   foreach($cpt_data as $post){
     $the_term = "";
 	  //Get Categories of Post & Parse
-	  $post_cats = get_the_category($post->ID);
+	  $post_cats = get_the_category($post->ID);    
 	  $the_term_name = "";
 	  foreach($post_cats as $post_cat){
 		  if($post_cat->name != "Veranda" && $post_cat->name != "Villa"){
         $the_term_name = $post_cat->name;
         //Get Post's main taxonomy (category)
-        $the_term = $post_cat;
+        $the_term = get_term($post_cat->term_id);
+        console_log($the_term);
 		  }
 	  }
     $db_fields = array(
       'title' => $post->post_title,
-      'description' => term_description($the_term->ID),
+      'description' => term_description($post_cat->term_id),
       'link' => get_field('page', $the_term),
       'post_id' => $post->ID,
       'location_address' => get_field('address', $post->ID),
-      'featured_image' => get_field('featured_image', $the_term->url),
+      'featured_image' => get_field('featured_image', 'term_'.$post_cat->term_id),
       'category_text' => $the_term_name,
       'category' => array_search($the_term_name, $cat_indx) + 1,
-      'price' => get_field('price', $the_term),
+      'price' => get_field('price', 'term_'.$post_cat->term_id),
       'availability' => get_field('status', $post->ID),
     );
     // KEY: %d interger (whole numbers only) %s string %f float
