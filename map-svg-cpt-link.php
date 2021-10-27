@@ -47,7 +47,7 @@ if ( !class_exists('acf') ) { // if ACF Pro plugin does not currently exist
   /** Start: Stop ACF upgrade notifications */
   add_filter( 'site_transient_update_plugins', 'cysp_stop_acf_update_notifications', 11 );
   function cysp_stop_acf_update_notifications( $value ) {
-    unset( $value->response[ plugin_dir_path( __FILE__ ) . 'inc/acf-incs/acf/acf.php' ] );
+    unset( $value->response[ plugin_dir_path( __FILE__ ) . 'inc/acf-incs/acf/acf.php'] );
     return $value;
   }
   /** End: Stop ACF upgrade notifications */
@@ -168,7 +168,7 @@ if($cpt_data){
     //Dynamic Column Checker
     foreach(array_keys($db_fields) as $column){
       //Check for existing Column
-      $col_query = $wpdb->get_results("SELECT * FROM " . $table_name . " WHERE ". $column);
+      $col_query = $wpdb->get_col("SELECT * FROM " . $table_name . " WHERE ". $column);
       //Add column if not present.
       if(!isset($col_query)){
         $wpdb->query("ALTER TABLE " . $table_name . " ADD " . $column . " VARCHAR(255)");
