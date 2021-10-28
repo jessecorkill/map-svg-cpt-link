@@ -98,7 +98,7 @@ $cat_args = array(
   'exclude' => $unwanted_ids //exclude villas and verandas
 );
 $cats = get_terms($cat_args);
-console_log($cats);
+//console_log($cats);
 $cat_names = array();
 foreach($cats as $cat) {
   $cat_names[] = $cat->name;
