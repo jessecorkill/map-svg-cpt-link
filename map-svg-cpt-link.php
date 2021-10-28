@@ -83,47 +83,43 @@ global $wpdb;
 //echo esc_html(show_array(wp_get_post_categories('83')));
 
 //Create Index Array of Available Categories
+$cat_name = '';
 $cat_args = array(
   'taxonomy' => 'category',
-  'hide_empty' => false,
+  'hide_empty' => true,
+  'name' => $cat_name,
+  'exclude' => array(5,6), //exclude villas and verandas
 );
 $cats = get_terms($cat_args);
-$cat_indx = [];
-$i = 0;
-foreach($cats as $cat){
-	$cat_indx[$i] = $cat->name;
-	$i = $i + 1;
+$cat_names = array();
+foreach($cats as $cat) {
+  $cat_names[] = $cat->name;
 }
 //console_log($cat_indx);
-
 if($cpt_data){
   //console_log(count($cpt_data));
   foreach($cpt_data as $post){
-    $the_term = "";
+    $term = "";
 	  //Get Categories of Post & Parse
-	  $post_cats = get_the_category($post->ID);    
-	  $the_term_name = "";
+	  $post_cats = get_the_category($post->ID);
 	  foreach($post_cats as $post_cat){
 		  if($post_cat->name != "Veranda" && $post_cat->name != "Villa"){
-        $the_term_name = $post_cat->name;
         //Get Post's main taxonomy (category)
-        $the_term = get_term($post_cat->term_id);
-        console_log($the_term);
+        $term = get_term($post_cat->term_id);
 		  }
 	  }
+    $featured_image = wp_get_attachment_image_src(get_field('featured_image','category_' . $term->term_id),'full');
     $db_fields = array(
-      //Post Fields
       'title' => $post->post_title,
-      'category_text' => $the_term_name,
-      'category' => array_search($the_term_name, $cat_indx) + 1,
+      'description' => term_description($term->term_id),
+      'link' => '/' . strtolower($term->name),
       'post_id' => $post->ID,
-      'location_address' => get_field('address', $post->ID),      
+      'location_address' => get_field('address', $post->ID),
+      'featured_image' => $featured_image[0],
+      'category_text' => $term->name,
+      'category' => array_search($term->name, $cat_names) + 1,
+      'price' => get_field('price', 'category_' . $term->term_id),
       'availability' => get_field('status', $post->ID),
-      //Tax Fields
-      'link' => get_field('page', $the_term),
-      'description' => term_description($post_cat->term_id),
-      'price' => get_field('price', 'term_'.$post_cat->term_id),
-      'featured_image' => get_field('featured_image', 'term_'.$post_cat->term_id),     
     );
     // KEY: %d interger (whole numbers only) %s string %f float
     $db_format = array(
@@ -134,7 +130,7 @@ if($cpt_data){
       '%s',
       '%s',
       '%s',
-      '%s',
+      '%d',
       '%s',
       '%s',
     );
