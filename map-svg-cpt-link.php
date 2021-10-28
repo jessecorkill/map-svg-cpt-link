@@ -112,16 +112,18 @@ if($cpt_data){
 		  }
 	  }
     $db_fields = array(
+      //Post Fields
       'title' => $post->post_title,
-      'description' => term_description($post_cat->term_id),
-      'link' => get_field('page', $the_term),
-      'post_id' => $post->ID,
-      'location_address' => get_field('address', $post->ID),
-      'featured_image' => get_field('featured_image', 'term_'.$post_cat->term_id),
       'category_text' => $the_term_name,
       'category' => array_search($the_term_name, $cat_indx) + 1,
-      'price' => get_field('price', 'term_'.$post_cat->term_id),
+      'post_id' => $post->ID,
+      'location_address' => get_field('address', $post->ID),      
       'availability' => get_field('status', $post->ID),
+      //Tax Fields
+      'link' => get_field('page', $the_term),
+      'description' => term_description($post_cat->term_id),
+      'price' => get_field('price', 'term_'.$post_cat->term_id),
+      'featured_image' => get_field('featured_image', 'term_'.$post_cat->term_id),     
     );
     // KEY: %d interger (whole numbers only) %s string %f float
     $db_format = array(
@@ -132,7 +134,7 @@ if($cpt_data){
       '%s',
       '%s',
       '%s',
-      '%d',
+      '%s',
       '%s',
       '%s',
     );
