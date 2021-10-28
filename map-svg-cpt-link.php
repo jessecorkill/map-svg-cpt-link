@@ -123,6 +123,7 @@ if($cpt_data){
       'Future Build' => 'pin1_grey.png',
       'Sold' => 'pin1_red.png',
       'Model' => 'pin1_blue.png',
+      'Contracted' => 'pin1_orange.png',
     ];
     $availability = get_field('status', $post->ID);
 
