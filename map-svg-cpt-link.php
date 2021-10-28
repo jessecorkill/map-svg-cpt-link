@@ -76,9 +76,8 @@ class MSCL{
 }
 MSCL::init();
 
-$table_name = 'wp_c5bebcd523_mapsvg_database_' . get_field('map_id', 'options');
-$table_name = 'wp_mapsvg_database_84';
 global $wpdb;
+$table_name = $wpdb->prefix . 'mapsvg_database_' . get_field('map_id', 'options');
 
 //echo esc_html(show_array(wp_get_post_categories('83')));
 
@@ -108,7 +107,7 @@ if($cpt_data){
         $the_term_name = $post_cat->name;
         //Get Post's main taxonomy (category)
         $the_term = get_term($post_cat->term_id);
-        console_log($the_term);
+        //console_log($the_term);
 		  }
 	  }
     $db_fields = array(
