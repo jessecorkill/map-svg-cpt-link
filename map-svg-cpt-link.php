@@ -83,13 +83,22 @@ $table_name = $wpdb->prefix . 'mapsvg_database_' . get_field('map_id', 'options'
 
 //Create Index Array of Available Categories
 $cat_name = '';
+
+//Remove Unwanted Cats from Categories
+$unwanted_ids = array();
+$villa_id = get_terms(['name' => 'Villa'])->id;
+$veranda_id = get_terms(['name' => 'Veranda'])->id;
+array_push($unwanted_ids, $villa_id);
+array_push($unwanted_ids, $veranda_id);
+
 $cat_args = array(
   'taxonomy' => 'category',
   'hide_empty' => true,
   'name' => $cat_name,
-  'exclude' => array(5,6), //exclude villas and verandas
+  'exclude' => $unwanted_ids //exclude villas and verandas
 );
 $cats = get_terms($cat_args);
+console_log($cats);
 $cat_names = array();
 foreach($cats as $cat) {
   $cat_names[] = $cat->name;
@@ -104,10 +113,19 @@ if($cpt_data){
 	  foreach($post_cats as $post_cat){
 		  if($post_cat->name != "Veranda" && $post_cat->name != "Villa"){
         //Get Post's main taxonomy (category)
-        $the_term = get_term($post_cat->term_id);
+        $term = get_term($post_cat->term_id);
         //console_log($the_term);
 		  }
 	  }
+    $pin_array = [
+      'Available Now' => 'pin1_green.png',
+      'Currently Building' => 'pin1_purple.png',
+      'Future Build' => 'pin1_grey.png',
+      'Sold' => 'pin1_red.png',
+      'Model' => 'pin1_blue.png',
+    ];
+    $availability = get_field('status', $post->ID);
+
     $featured_image = wp_get_attachment_image_src(get_field('featured_image','category_' . $term->term_id),'full');
     $db_fields = array(
       //Post Data
@@ -116,7 +134,8 @@ if($cpt_data){
       'location_address' => get_field('address', $post->ID),
       'category_text' => $term->name,
       'category' => array_search($term->name, $cat_names) + 1,
-      'availability' => get_field('status', $post->ID),
+      'availability' => $availability,
+      'location_img' => $pin_array[$availability],
       //Tax Data
       'description' => term_description($term->term_id),
       'link' => '/' . strtolower($term->name),
