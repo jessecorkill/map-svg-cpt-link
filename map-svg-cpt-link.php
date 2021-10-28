@@ -110,27 +110,29 @@ if($cpt_data){
 	  }
     $featured_image = wp_get_attachment_image_src(get_field('featured_image','category_' . $term->term_id),'full');
     $db_fields = array(
+      //Post Data
       'title' => $post->post_title,
-      'description' => term_description($term->term_id),
-      'link' => '/' . strtolower($term->name),
       'post_id' => $post->ID,
       'location_address' => get_field('address', $post->ID),
-      'featured_image' => $featured_image[0],
       'category_text' => $term->name,
       'category' => array_search($term->name, $cat_names) + 1,
-      'price' => get_field('price', 'category_' . $term->term_id),
       'availability' => get_field('status', $post->ID),
+      //Tax Data
+      'description' => term_description($term->term_id),
+      'link' => '/' . strtolower($term->name),
+      'featured_image' => $featured_image[0],
+      'price' => get_field('price', 'category_' . $term->term_id),
     );
     // KEY: %d interger (whole numbers only) %s string %f float
     $db_format = array(
       '%s',
-      '%s',
-      '%s',
       '%d',
       '%s',
       '%s',
       '%s',
-      '%d',
+      '%s',
+      '%s',
+      '%s',
       '%s',
       '%s',
     );
